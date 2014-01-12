@@ -29,17 +29,14 @@ public class NetworkSwitch extends Thread {
 		for (int i = 0; i < numberPorts; i++) {
 			ports[i] = new SwitchPort(i);
 		}
-
 	}
 
 	public int getNumberPorts() {
-
 		return ports.length;
 
 	}
 
 	public SwitchPort getPort(int number) {
-
 		return ports[number];
 	}
 
@@ -69,14 +66,12 @@ public class NetworkSwitch extends Thread {
 		while (true) {
 			// reset the temporary string to store ip addresses
 			String temp = "";
-
 			try {
 				sleep(10);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 			synchronized (this) {
 				for (int j = 0; j < ports.length; j++) {
 					byte packet[] = ports[j].getIncomingPacket();

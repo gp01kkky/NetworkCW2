@@ -31,24 +31,14 @@ public class HelloWorldClient extends Application {
     private String message = "Hello World!";
 
 
-//    public HelloWorldClient(ComputerOS computerOS, InetAddress toServerIPAddress, int toPort) {
-//
-//        super("HelloWorldServer v1.0", computerOS);
-//
-//        this.toServerIPAddress = toServerIPAddress;
-//        this.toPort = toPort;
-//
-//    }
-    
-    //for testing purposes
-    public HelloWorldClient(ComputerOS computerOS, InetAddress toServerIPAddress, int toPort, String message) {
+    public HelloWorldClient(ComputerOS computerOS, InetAddress toServerIPAddress, int toPort) {
 
         super("HelloWorldServer v1.0", computerOS);
-        this.message = message;
+
         this.toServerIPAddress = toServerIPAddress;
         this.toPort = toPort;
-    }
 
+    }
 
     public void run() {
 

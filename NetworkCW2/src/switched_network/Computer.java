@@ -8,7 +8,6 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -31,16 +30,16 @@ public class Computer implements ComputerOS, NetworkCard {
 	private final InetAddress ipAddress;
 
 	private Lock lock = new ReentrantLock();
-	private Queue<byte[]> payload_queue = new LinkedList<byte[]>();
 
 	// This is the switch port which the computer is attached to.
 	private SwitchPort port = null;
 
 	private final static int MAX_PORTS = 65536;
 
+	
 	// To store the packet with port number specified
 	private HashMap<Integer, Queue<byte[]>> received_packet_table = new HashMap<Integer, Queue<byte[]>>();
-
+	
 	public Computer(String hostname, InetAddress ipAddress) {
 
 		this.hostname = hostname;
@@ -135,20 +134,21 @@ public class Computer implements ComputerOS, NetworkCard {
 	 */
 	public  byte[] recv(int port) {
 		// YOU NEED TO IMPLEMENT THIS METHOD.
+		byte[] payload = null;
 		lock.lock();
-		Queue<byte[]> payloads = received_packet_table.get(port);
-		if(payloads!=null)
-		{
-		byte[]payload = payloads.poll();
-		lock.unlock();
-		return payload;
+		try{
+			Queue<byte[]> payloads = received_packet_table.get(port);
+			if(payloads!=null)
+			{
+			payload = payloads.poll();
+			}
 		}
-		else
-		{
+		finally{
 			lock.unlock();
-			return null;
 		}
+		return payload;
 	}
+	
 
 	/**********************************************************************************
 	 * The following methods implement the Network Card interface for this
@@ -189,11 +189,18 @@ public class Computer implements ComputerOS, NetworkCard {
 		int dest_port_no = (packet[11] & 0xFF) << 8 | packet[10] & 0xFF;
 		lock.lock();
 		try {
-			payload_queue.add(payload);
-			received_packet_table.put(dest_port_no, payload_queue);
+			if(received_packet_table.get(dest_port_no)==null)
+			{
+				Queue<byte[]> payload_queue = new LinkedList<byte[]>();
+				payload_queue.add(payload);
+				received_packet_table.put(dest_port_no, payload_queue);
+			}
+			else
+			{
+				received_packet_table.get(dest_port_no).add(payload);
+			}
 		} finally {
 			lock.unlock();
 		}
 	}
-
 }
